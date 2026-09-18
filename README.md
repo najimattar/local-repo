@@ -1,1 +1,2 @@
-# this is new Local repo file
+# we are learning Git for devops 
+
