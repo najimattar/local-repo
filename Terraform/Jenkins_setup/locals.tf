@@ -1,3 +1,3 @@
 locals {
-  machine = terraform.workspcae
+  machine = terraform.workspace
 }
