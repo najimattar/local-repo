@@ -1,0 +1,8 @@
+terraform {
+  backend "s3" {
+    bucket = "terraform-bucket-for-state-today"
+    key    = "workspace/terraform.tfstate"
+    region = "us-east-1"
+  }
+
+}

@@ -1,0 +1,3 @@
+locals {
+  machine = terraform.workspcae
+}
