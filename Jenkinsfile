@@ -44,10 +44,10 @@ pipeline{
             }
 		
         }
-	stage('destroy'){
+		stage('destroy'){
 		steps{
 			dir('Terraform'){
-				sh 'destroy-agent2.sh'
+				sh './destroy-agent2.sh'
 			}	
 		}	
 	}
