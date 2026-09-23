@@ -6,32 +6,36 @@ pipeline{
     stages{
         stage("Checkout"){
             steps{
+		
                 echo "checkout complete"
             }
         }
         stage("terraform init"){
             steps{
                 echo "terraform initializing.."
+		sh 'terraform init'
             }
         }
         stage("terraform validate"){
             steps{
+		sh 'terraform validate'
                 echo "validation process running"
             }
         }
-        stage("terraform workspace select master"){
+        stage("terraform workspace select agent2"){
             steps{
-                echo "you are in master workspace"
+		sh 'terraform workspace select agent2 || terraform workspace new agent2'
+                echo "you are in agent2 workspace"
             }
         }
         stage("terraform plan"){
             steps{
-                echo "terraform plan"
+                sh "terraform plan"
             }
         }
         stage("apply"){
             steps{
-                echo "terraform applying"
+                sh "terraform applying"
             }
         }
     }
