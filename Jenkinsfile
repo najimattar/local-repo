@@ -4,13 +4,7 @@ pipeline{
      }
     
     stages{
-        stage("Checkout"){
-            steps{
-				git branch : 'main',
-				 url: 'https://github.com/najimattar/local-repo.git'
-                echo "checkout complete"
-            }
-        }
+        
         stage("terraform init"){
             steps{
 				dir ('Terraform'){
@@ -48,7 +42,15 @@ pipeline{
                 	sh "terraform apply --auto-approve"
 				}
             }
+		
         }
+	stage('destroy'){
+		steps{
+			dir('Terraform'){
+				sh 'destroy-agent2.sh'
+			}	
+		}	
+	}
     }
     
     post {
