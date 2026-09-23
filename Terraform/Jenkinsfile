@@ -1,0 +1,49 @@
+pipeline{
+     agent{
+         label "jenkins-agent1"
+     }
+    
+    stages{
+        stage("Checkout"){
+            steps{
+                echo "checkout complete"
+            }
+        }
+        stage("terraform init"){
+            steps{
+                echo "terraform initializing.."
+            }
+        }
+        stage("terraform validate"){
+            steps{
+                echo "validation process running"
+            }
+        }
+        stage("terraform workspace select master"){
+            steps{
+                echo "you are in master workspace"
+            }
+        }
+        stage("terraform plan"){
+            steps{
+                echo "terraform plan"
+            }
+        }
+        stage("apply"){
+            steps{
+                echo "terraform applying"
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo "successfully build"
+        }
+        failure {
+            echo "deployment failed"
+        }
+    }
+    
+    
+}
