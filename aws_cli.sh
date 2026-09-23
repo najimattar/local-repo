@@ -6,3 +6,5 @@ unzip awscliv2.zip
 sudo ./aws/install
 
 aws --version
+
+aws sts get-caller-identity
