@@ -1,3 +1,0 @@
-locals {
-  machine = terraform.workspace
-}
