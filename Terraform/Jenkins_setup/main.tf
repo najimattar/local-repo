@@ -7,4 +7,7 @@ resource "aws_instance" "this" {
   tags = {
     Name = "Jenkins-${local.machine}"
   }
+
+  vpc_security_group_ids = var.security_group[local.machine]
+
 }
