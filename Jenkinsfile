@@ -13,7 +13,7 @@ pipeline{
         }
         stage("terraform init"){
             steps{
-				dir (Terraform){
+				dir ('Terraform'){
                		 echo "terraform initializing.."
 						sh 'terraform init'
 				}
@@ -21,7 +21,7 @@ pipeline{
         }
         stage("terraform validate"){
             steps{
-				dir (Terraform){
+				dir ('Terraform'){
 					sh 'terraform validate'
                 	echo "validation process running"
 				}
@@ -29,7 +29,7 @@ pipeline{
         }
         stage("terraform workspace select agent2"){
             steps{
-				dir (Terraform){
+				dir ('Terraform'){
 					sh 'terraform workspace select agent2 || terraform workspace new agent2'
                 	echo "you are in agent2 workspace"
 				}
@@ -37,15 +37,15 @@ pipeline{
         }
         stage("terraform plan"){
             steps{
-				dir (Terraform){
+				dir ('Terraform'){
                 	sh "terraform plan"
             	}
 			}
         }
         stage("apply"){
             steps{
-				dir (Terraform){
-                	sh "terraform applying"
+				dir ('Terraform'){
+                	sh "terraform apply --auto-approve"
 				}
             }
         }
