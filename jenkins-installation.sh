@@ -15,3 +15,8 @@ sudo apt install jenkins -y
 sudo systemctl start jenkins
 sudo systemctl enable jenkins
 sudo systemctl status jenkins
+
+echo "(oo)"
+echo "jenkins UI Password:"
+
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
