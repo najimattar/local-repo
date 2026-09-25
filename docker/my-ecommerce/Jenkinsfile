@@ -25,10 +25,10 @@ pipeline {
 		stage("push"){
 			steps{
 				echo 'docker image push to dockerHub'
-				sh ```
+				sh '''
 					docker push ${BUILD_IMAGE}:${BUILD_NUMBER}
 
-				     ```
+				     '''
 			}
 		}
 
