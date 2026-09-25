@@ -12,8 +12,10 @@ pipeline {
 		}
 		stage("build"){
 			steps{
-				echo 'Build docker image'
-				sh 'docker build -t e-commers:${BUILD_NUMBER} .'
+				dir('docker/my-ecommerce'){
+					echo 'Build docker image'
+					sh 'docker build -t e-commers:${BUILD_NUMBER} .'
+				}
 			}
 		}
 		stage("Image"){
