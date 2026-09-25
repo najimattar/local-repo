@@ -4,7 +4,7 @@ pipeline {
 	}
 	
 	environment{
-		BUILD_IMAGES = 'najimattat/e-commers'
+		BUILD_IMAGES = 'najimattar/e-commers'
 	}
 	
 	stages{
