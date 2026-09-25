@@ -6,13 +6,13 @@ pipeline {
 	stages{
 		stage("Checkout"){
 			steps{
-				echo 'Git Vesion'
+				echo 'Git Version'
 			}
 		}
 		stage("build"){
 			steps{
 				echo 'Build docker image'
-				sh 'docker build -t E-commers:v1 .'
+				sh 'docker build -t e-commers:v1 .'
 			}
 		}
 		stage("Image"){
