@@ -6,7 +6,8 @@ pipeline {
 	stages{
 		stage("Checkout"){
 			steps{
-				echo 'Git Version'
+				echo 'checking out SCM'
+				checkout scm
 			}
 		}
 		stage("build"){
