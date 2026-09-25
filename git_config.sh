@@ -1,2 +1,2 @@
 git config --global user.email najimattar313gmail.com
-git cngfig --global user.name najimattar
+git cnnfig --global user.name najimattar
