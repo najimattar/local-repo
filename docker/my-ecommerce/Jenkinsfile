@@ -27,7 +27,7 @@ pipeline {
 		stage("Run"){
 			steps{
 				echo 'running container using docker image'
-				sh 'docker run -d --name app -p 8090:80 e-commers:&{BUILD_NUMBER}'
+				sh 'docker run -d --name app -p 8090:80 e-commers:${BUILD_NUMBER}'
 			}
 		}
 		stage("check containers"){
