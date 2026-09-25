@@ -3,6 +3,10 @@ pipeline {
 		label 'docker-agent'
 	}
 	
+	environment{
+		BUILD_IMAGES = 'najimattat/e-commers'
+	}
+	
 	stages{
 		stage("Checkout"){
 			steps{
@@ -14,10 +18,20 @@ pipeline {
 			steps{
 				dir('docker/my-ecommerce'){
 					echo 'Build docker image'
-					sh 'docker build -t e-commers:${BUILD_NUMBER} .'
+					sh 'docker build -t ${BUILD_IMAGE}:${BUILD_NUMBER} .'
 				}
 			}
 		}
+		stage("push"){
+			steps{
+				echo 'docker image push to dockerHub'
+				sh ```
+					'docker push ${BIULD_IMAGE}:${BUILD_NUMBER}'
+
+				     ```
+			}
+		}
+
 		stage("Image"){
 			steps{
 				echo 'docker image'
