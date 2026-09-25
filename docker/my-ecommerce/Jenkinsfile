@@ -12,7 +12,7 @@ pipeline {
 		stage("build"){
 			steps{
 				echo 'Build docker image'
-				sh 'docker build -t e-commers:v1 .'
+				sh 'docker build -t e-commers:${BUILD_NUMBER} .'
 			}
 		}
 		stage("Image"){
