@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('docker') {
+            steps {
+                echo 'check docker version'
+                sh 'docker --version'
+            }
+        }
+        stage('docekr img'){
+            steps{
+                echo 'docker have this images :'
+                sh 'docker images'
+            }
+        }
+        stage('containers') {
+            steps{
+                echo 'docker containers: '
+                sh 'docker ps'
+            }
+        }
+    }
+}
+
