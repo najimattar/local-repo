@@ -33,13 +33,7 @@ pipeline {
 				sh 'docker ps'
 			}
 		}	
-		stage("Image"){
-			steps{
-				echo 'docker image'
-				sh 'docker images'
-			}
-		}
-	
+			
 	}
 	post { 
 		success { 
