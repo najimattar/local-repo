@@ -1,0 +1,52 @@
+pipeline {
+	agent {
+		label 'docker-agent'
+	}
+	
+	stages{
+		stage("Checkout"){
+			steps{
+				echo 'Git Vesion'
+			}
+		}
+		stage("build"){
+			steps{
+				echo 'Build docker image'
+				sh 'docker build -t E-commers:v1 .'
+			}
+		}
+		stage("Image"){
+			steps{
+				echo 'docker image'
+				sh 'docker images'
+			}
+		}
+		stage("Run"){
+			steps{
+				echo 'running container using docker image'
+				sh 'docker run -d --name app -p 8080:80 E-commers:v1'
+			}
+		}
+		stage("check containers"){
+			steps{
+				echo 'docker containers '
+				sh 'docker ps'
+			}
+		}	
+		stage("Image"){
+			steps{
+				echo 'docker image'
+				sh 'docker images'
+			}
+		}
+	
+	}
+	post { 
+		success { 
+			echo 'E-commerce application deployed successfully!' 
+		} 
+		failure { 
+			echo 'Build or deployment failed.' 
+		} 
+	}
+}
