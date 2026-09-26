@@ -58,6 +58,12 @@ pipeline {
 				'''
 			}
 		}
+		stage("Approval"){
+			steps{
+				input : 'you want to run container..'
+				ok : 'yes'
+			}
+		}
 
 		stage("Run"){
 			steps{
