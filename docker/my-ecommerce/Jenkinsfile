@@ -41,8 +41,10 @@ pipeline {
 		stage("stop"){
 			steps{
 				echo 'delete container'
-				sh 'docker stop app || true'
-				sh 'docker rm app || true'
+				sh '''
+					docker stop app || true
+					docker rm app || true
+				'''
 			}
 		}
 
