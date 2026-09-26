@@ -4,7 +4,8 @@ pipeline {
 	}
 	
 	environment{
-		BUILD_IMAGE = 'najimattar/e-commers'
+		IMAGE_NAME = 'najimattar/e-commers'
+		IMAGE_TAG = '${BUILD_NUMBER}'
 	}
 	
 	stages{
@@ -18,15 +19,25 @@ pipeline {
 			steps{
 				dir('docker/my-ecommerce'){
 					echo 'Build docker image'
-					sh 'docker build -t ${BUILD_IMAGE}:${BUILD_NUMBER} .'
+					sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
 				}
+			}
+		}
+		stage("Image scan"){
+			steps{
+				echo 'docker image scan...'
+				sh '''
+					trivy --version
+					trivy image ${IMAGE_NAME}:${IMAGE_TAG}
+
+				     '''
 			}
 		}
 		stage("push"){
 			steps{
 				echo 'docker image push to dockerHub'
 				sh '''
-					docker push ${BUILD_IMAGE}:${BUILD_NUMBER}
+					docker push ${IMAGE_NAME}:${IMAGE_TAG}
 
 				     '''
 			}
@@ -34,13 +45,13 @@ pipeline {
 
 		stage("Image"){
 			steps{
-				echo 'docker image'
+				echo 'docker images..'
 				sh 'docker images'
 			}
 		}
 		stage("stop"){
 			steps{
-				echo 'delete container'
+				echo 'delete container...'
 				sh '''
 					docker stop app || true
 					docker rm app || true
@@ -51,7 +62,7 @@ pipeline {
 		stage("Run"){
 			steps{
 				echo 'running container using docker image'
-				sh 'docker run -d --name app -p 8090:80 ${BUILD_IMAGE}:${BUILD_NUMBER}'
+				sh 'docker run -d --name app -p 8090:80 ${IMAGE_NAME}:${IMAGE_TAG}'
 			}
 		}
 		stage("check containers"){
