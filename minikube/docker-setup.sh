@@ -6,28 +6,31 @@
 # ============================================================
 #
 # This script:
+#
 # 1. Updates Ubuntu packages
-# 2. Installs prerequisites
+# 2. Installs Docker prerequisites
 # 3. Adds Docker's official GPG key
 # 4. Adds Docker's official APT repository
-# 5. Installs Docker Engine and related plugins
+# 5. Installs Docker Engine
 # 6. Enables and starts Docker
-# 7. Adds the Jenkins user to the Docker group
+# 7. Adds the "ubuntu" user to the Docker group
 # 8. Verifies the Docker installation
 #
 # IMPORTANT:
-# After adding Jenkins to the docker group, the Jenkins agent
-# session/service must be restarted for the permission change
-# to take effect.
+# Jenkins connects to this agent using the "ubuntu" user.
+#
+# Therefore, we add:
+#
+#       ubuntu -> docker group
+#
+# This allows the Jenkins agent process running as "ubuntu"
+# to execute Docker commands without sudo.
 #
 # ============================================================
 
 
 # ------------------------------------------------------------
 # Step 1: Update Ubuntu package information
-# ------------------------------------------------------------
-# Refreshes the list of available packages from Ubuntu
-# repositories.
 # ------------------------------------------------------------
 
 sudo apt update
@@ -36,6 +39,7 @@ sudo apt update
 # ------------------------------------------------------------
 # Step 2: Install required packages
 # ------------------------------------------------------------
+#
 # ca-certificates:
 #   Allows the system to verify HTTPS certificates.
 #
@@ -49,6 +53,7 @@ sudo apt install ca-certificates curl -y
 # ------------------------------------------------------------
 # Step 3: Create APT keyrings directory
 # ------------------------------------------------------------
+#
 # Docker's GPG key will be stored here.
 # ------------------------------------------------------------
 
@@ -58,8 +63,8 @@ sudo install -m 0755 -d /etc/apt/keyrings
 # ------------------------------------------------------------
 # Step 4: Download Docker's official GPG key
 # ------------------------------------------------------------
-# The GPG key allows Ubuntu's APT package manager to verify
-# that Docker packages come from the official Docker repository.
+#
+# The GPG key allows APT to verify Docker packages.
 # ------------------------------------------------------------
 
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
@@ -76,14 +81,12 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 # ------------------------------------------------------------
 # Step 6: Add Docker's official APT repository
 # ------------------------------------------------------------
-# This tells Ubuntu to download Docker packages from Docker's
-# official repository instead of relying on Ubuntu's potentially
-# older Docker packages.
 #
-# The Ubuntu codename is detected automatically.
+# The Ubuntu version/codename is detected automatically.
+#
 # Examples:
-#   jammy  -> Ubuntu 22.04
-#   noble  -> Ubuntu 24.04
+#   Ubuntu 22.04 -> jammy
+#   Ubuntu 24.04 -> noble
 # ------------------------------------------------------------
 
 sudo tee /etc/apt/sources.list.d/docker.sources > /dev/null <<EOF
@@ -97,10 +100,11 @@ EOF
 
 
 # ------------------------------------------------------------
-# Step 7: Update APT again
+# Step 7: Update APT
 # ------------------------------------------------------------
-# This time Ubuntu will also read packages from Docker's
-# official repository that we just added.
+#
+# Ubuntu will now read packages from Docker's official
+# repository.
 # ------------------------------------------------------------
 
 sudo apt update
@@ -117,14 +121,13 @@ sudo apt update
 #   Docker command-line interface
 #
 # containerd.io:
-#   Container runtime used by Docker
+#   Container runtime
 #
 # docker-buildx-plugin:
-#   Enables modern Docker Buildx builds
+#   Modern Docker build functionality
 #
 # docker-compose-plugin:
-#   Provides Docker Compose v2 using:
-#       docker compose
+#   Docker Compose v2
 # ------------------------------------------------------------
 
 sudo apt install docker-ce docker-ce-cli containerd.io \
@@ -134,8 +137,8 @@ sudo apt install docker-ce docker-ce-cli containerd.io \
 # ------------------------------------------------------------
 # Step 9: Enable Docker at system boot
 # ------------------------------------------------------------
-# Ensures Docker starts automatically when the Jenkins agent
-# machine is rebooted.
+#
+# Docker will automatically start after an Ubuntu reboot.
 # ------------------------------------------------------------
 
 sudo systemctl enable docker.service
@@ -145,69 +148,74 @@ sudo systemctl enable containerd.service
 # ------------------------------------------------------------
 # Step 10: Start Docker
 # ------------------------------------------------------------
-# Starts Docker immediately without requiring a server reboot.
-# ------------------------------------------------------------
 
 sudo systemctl start docker
 
 
 # ------------------------------------------------------------
-# Step 11: Check Docker service status
-# ------------------------------------------------------------
-# This is mainly for verification.
+# Step 11: Check Docker service
 # ------------------------------------------------------------
 
 sudo systemctl --no-pager status docker
 
 
+# ============================================================
+#                 DOCKER PERMISSION FOR UBUNTU
+# ============================================================
+
+
 # ------------------------------------------------------------
-# Step 12: Add Jenkins user to Docker group
+# Step 12: Add ubuntu user to Docker group
 # ------------------------------------------------------------
-# By default, Docker commands may require sudo.
 #
-# Jenkins jobs normally run as the "jenkins" Linux user.
-# Adding Jenkins to the docker group allows Jenkins to run:
+# Jenkins connects to this machine using:
 #
-#     docker ps
-#     docker build
-#     docker run
-#     docker push
-#     docker compose
+#       Username: ubuntu
 #
-# without sudo.
+# Jenkins therefore runs the agent process as the "ubuntu"
+# Linux user.
 #
-# IMPORTANT:
-# The Jenkins agent/service must be restarted after this.
-# ------------------------------------------------------------
-
-sudo usermod -aG docker jenkins
-
-
-# ------------------------------------------------------------
-# Step 13: Display Docker version
-# ------------------------------------------------------------
-# Confirms that the Docker CLI is installed.
-# ------------------------------------------------------------
-
-docker --version
-
-
-# ------------------------------------------------------------
-# Step 14: Verify Docker daemon
-# ------------------------------------------------------------
-# This checks whether Docker can communicate with the daemon.
+# Adding ubuntu to the Docker group allows commands such as:
 #
-# NOTE:
-# If this command gives a permission error immediately after
-# usermod, restart the Jenkins session/service first.
+#       docker ps
+#       docker images
+#       docker build
+#       docker run
+#       docker push
+#       docker compose
+#
+# to work WITHOUT sudo.
+#
 # ------------------------------------------------------------
+
+sudo usermod -aG docker ubuntu
+
+
+# ------------------------------------------------------------
+# Step 13: Verify Docker group membership
+# ------------------------------------------------------------
+
+echo ""
+echo "Docker group information:"
+getent group docker
+
+
+echo ""
+echo "Ubuntu user groups:"
+groups ubuntu
+
+
+# ============================================================
+#                    VERIFICATION
+# ============================================================
+
 
 echo ""
 echo "============================================================"
 echo "Docker installation completed."
 echo "============================================================"
-echo ""
 
+echo ""
 echo "Docker version:"
 docker --version
 
@@ -216,18 +224,24 @@ echo "Docker service:"
 sudo systemctl is-active docker
 
 echo ""
-echo "Jenkins Docker group:"
-groups jenkins
+echo "Docker socket:"
+ls -l /var/run/docker.sock
 
 echo ""
 echo "============================================================"
 echo "IMPORTANT NEXT STEP"
 echo "============================================================"
-echo "Restart your Jenkins agent/service so the docker group"
-echo "membership becomes active for the Jenkins process."
 echo ""
-echo "Then test Docker as the Jenkins user with:"
+echo "The ubuntu user was added to the docker group."
 echo ""
-echo "    sudo -u jenkins docker ps"
+echo "You MUST log out and log back in, or restart the Jenkins"
+echo "agent, before Docker works without sudo."
+echo ""
+echo "After reconnecting, test:"
+echo ""
+echo "    groups"
+echo "    docker ps"
+echo "    docker images"
+echo "    docker run hello-world"
 echo ""
 echo "============================================================"
