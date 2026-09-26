@@ -61,7 +61,7 @@ pipeline {
 		stage("Approval"){
 			steps{
 				input (
-					massage : 'you want to run container..' ,
+					message : 'you want to run container..' ,
 					ok : 'yes'
 				)
 			}
